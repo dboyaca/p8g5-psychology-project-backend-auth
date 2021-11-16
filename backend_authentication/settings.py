@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,8 +26,8 @@ SECRET_KEY = 'django-insecure-1#&h^w83=3lo!3)r7&o7y44zv*0+02w_7b53cs$(nag*%^h&2=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS           = []
+CORS_ALLOW_ALL_ORIGINS  = True
 
 # Application definition
 
@@ -37,7 +38,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'auth_app',
+    'rest_framework',
 ]
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME'     : timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME'    : timedelta(days=1),
+    'ROTATE_REFRESH_TOKEN'      : False,
+    'BLACK_LIST_AFTER_ROTATION' : False,
+    'UPDATE_LAST_LOGIN'         : False,
+    'ALGORITHM'                 : 'HS256',
+    'USER_ID_FIELD'             : 'id',
+    'USER_ID_CLAIM'             : 'user_id',
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -49,6 +63,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES' : (
+        'rest_framework.permissions.AllowAny',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES' : (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+AUTH_USER_MODEL = 'auth_app.User'
 ROOT_URLCONF = 'backend_authentication.urls'
 
 TEMPLATES = [
@@ -75,8 +99,12 @@ WSGI_APPLICATION = 'backend_authentication.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE'        : 'django.db.backends.postgresql_psycopg2',
+        'NAME'          : 'auth_ms',
+        'USER'          : 'postgres',
+        'PASSWORD'      : '123456',
+        'HOST'          : 'localhost',
+        'PORT'          : '5432',
     }
 }
 
